@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+check_command_exists() {
+    command -v "$1" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "I require $1 but it's not installed. Abort."
+        exit 1
+    fi
+}
+
+print_usage_and_exit() {
+    echo "Usage: video-to-gif FILE"
+    exit 1
+}
+
+check_command_exists "ffmpeg"
+
+if ! [ "$#" -eq "1" ]; then
+   print_usage_and_exit 
+fi
+
+tmp=$(mktemp -d)
+ffmpeg -y -i "$1" -vf palettegen "$tmp/palette.png"
+ffmpeg -y -i "$1" -i "$tmp/palette.png" -filter_complex paletteuse -r 10 "${1%.*}.gif"

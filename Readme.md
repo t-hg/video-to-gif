@@ -1,0 +1,3 @@
+```
+./video-to-gif FILE
+```
